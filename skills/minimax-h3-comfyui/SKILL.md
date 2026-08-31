@@ -29,11 +29,14 @@ Without an enhancement flag, treat the prompt as finished: do not silently rewri
 - I2V: `../minimax-h3-frame-to-video/SKILL.md`
 - R2V: `../minimax-h3-reference-to-video/SKILL.md`
 
+Keep external `h3-storyboard` and Prompt Composer output unchanged when it is handed to the original storyboard route; use `prompt_enhance=false`.
+
 ## Select the bundled workflow
 
 - No controlling media: `assets/workflows/t2v-turbo.api.json` by default; `t2v.api.json` when Turbo is false.
 - One literal first frame, or literal first and last frames: `assets/workflows/i2v-turbo.api.json` by default; `i2v.api.json` when Turbo is false.
 - Media used for identity, style, motion, camera, performance, voice, music, or rhythm: `assets/workflows/r2v-turbo.api.json` by default; `r2v.api.json` when Turbo is false.
+- The preserved original storyboard graph is an explicit R2V route: use `--mode r2v --variant storyboard-original` in the preparer. It is pinned and accepts one storyboard image, one standalone Audio1, prompt text, seed, and output prefix only.
 
 Use the `.api.json` files for validation and execution. Use each variant's matching `.ui.json` file for provenance and browser preview. The Turbo copies preserve the original mode graph while inserting `MiniMaxH3TurboLoRA` after the diffusion loader, replacing the sampler selector with `MiniMaxH3TurboSampler`, and setting `simple` scheduling with 6 steps. Reject arbitrary attached workflow JSON at runtime; custom-workflow adaptation is intentionally deferred.
 
@@ -71,6 +74,8 @@ Allowed deterministic patches are:
 - R2V reference-size overrides
 
 Never patch fields by searching for example text or relying on UI coordinates. Use `assets/workflows/manifest.json` and the preparer script.
+
+The `storyboard-original` route freezes duration, size, model, and sampler settings so its original topology stays intact; do not map standalone audio to `ref_video_audios`.
 
 ## Return a concise execution report
 

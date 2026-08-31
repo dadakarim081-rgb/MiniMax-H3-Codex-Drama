@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import copy
+import hashlib
 import json
 import math
 import sys
@@ -171,6 +172,74 @@ def set_input(workflow: dict[str, Any], location: list[str], value: Any) -> None
     workflow[node_id]["inputs"][input_name] = value
 
 
+def verify_pinned_api(path: Path, expected_sha256: str) -> None:
+    actual_sha256 = hashlib.sha256(path.read_bytes()).hexdigest()
+    if actual_sha256 != expected_sha256:
+        raise ConfigError(f"Pinned API hash mismatch for {path}")
+
+
+def apply_storyboard_original(
+    workflow: dict[str, Any],
+    variant: dict[str, Any],
+    args: argparse.Namespace,
+    config: dict[str, Any],
+    prompt: str | None,
+) -> None:
+    if getattr(args, "turbo", None) is not None:
+        raise ConfigError("storyboard-original has a fixed non-turbo topology")
+    unsupported = (
+        "width",
+        "height",
+        "duration",
+        "fl2va",
+        "ref2va",
+        "text_encoder",
+        "video_vae",
+        "audio_vae",
+        "turbo_lora",
+        "sampler",
+        "scheduler",
+        "steps",
+        "denoise",
+        "ref_image_size",
+        "first_frame",
+        "last_frame",
+        "reference_video",
+    )
+    if any(getattr(args, name, None) not in (None, "", []) for name in unsupported):
+        raise ConfigError("storyboard-original only accepts prompt, image, audio, seed, and prefix")
+    if any(value not in (None, "") for value in config["models"].values()):
+        raise ConfigError("storyboard-original has fixed model inputs")
+    generation = config["generation"]
+    if any(
+        generation.get(name) not in (None, "")
+        for name in ("width", "height", "duration_seconds", "sampler", "scheduler", "steps", "denoise", "ref_image_size")
+    ):
+        raise ConfigError("storyboard-original has fixed size, duration, model, and sampler inputs")
+
+    images = getattr(args, "reference_image", []) or []
+    audios = getattr(args, "reference_audio", []) or []
+    if len(images) > 1 or len(audios) > 1:
+        raise ConfigError("storyboard-original accepts at most one image and one standalone audio")
+    if prompt is not None:
+        set_input(workflow, variant["prompt"], prompt)
+    if images:
+        set_input(workflow, variant["storyboard"], images[0])
+    if audios:
+        audio_node = variant["audio_node"]
+        workflow[audio_node] = {"class_type": "LoadAudio", "inputs": {"audio": audios[0]}}
+        set_input(workflow, variant["standalone_audio"], [audio_node, 0])
+
+    seed = args.seed if args.seed is not None else generation.get("seed")
+    if seed is not None:
+        if seed < 0:
+            raise ConfigError("seed must be non-negative")
+        set_input(workflow, variant["seed"], seed)
+    filename_prefix = args.filename_prefix or generation.get("filename_prefix")
+    if filename_prefix:
+        set_input(workflow, variant["output"], filename_prefix)
+
+
 def remove_r2v_template_media(workflow: dict[str, Any]) -> None:
     inputs = workflow["136"]["inputs"]
     for key in list(inputs):
@@ -249,16 +318,43 @@ def build_workflow(args: argparse.Namespace) -> tuple[dict[str, Any], dict[str, 
     manifest = read_json(MANIFEST_PATH)
     mode = manifest["modes"][args.mode]
     config, config_files = load_config(args.project_root.resolve())
+    requested_variant = getattr(args, "variant", None)
     explicit_turbo = getattr(args, "turbo", None)
-    turbo = explicit_turbo if explicit_turbo is not None else config["runtime"]["turbo"]
-    variant_name = "turbo" if turbo else "standard"
+    if requested_variant:
+        if args.mode != "r2v":
+            raise ConfigError("storyboard-original is only available for r2v")
+        turbo = False
+        variant_name = requested_variant
+    else:
+        turbo = explicit_turbo if explicit_turbo is not None else config["runtime"]["turbo"]
+        variant_name = "turbo" if turbo else "standard"
     variant = mode["variants"][variant_name]
-    workflow = read_json(WORKFLOW_DIR / variant["api"])
+    workflow_path = WORKFLOW_DIR / variant["api"]
+    if requested_variant:
+        verify_pinned_api(workflow_path, variant["api_sha256"])
+    workflow = read_json(workflow_path)
     generation = config["generation"]
 
     prompt = args.prompt
     if args.prompt_file:
         prompt = args.prompt_file.read_text(encoding="utf-8")
+    if requested_variant:
+        apply_storyboard_original(workflow, variant, args, config, prompt)
+        metadata = {
+            "mode": args.mode,
+            "variant": variant_name,
+            "turbo": False,
+            "workflow": str(workflow_path),
+            "ui_workflow": str(variant["ui"]),
+            "source_path": variant["source_path"],
+            "source_sha256": variant["source_sha256"],
+            "api_sha256": variant["api_sha256"],
+            "config_files": config_files,
+            "address": normalize_address(config["connection"]["address"]),
+            "runtime": effective_runtime({**config["runtime"], "turbo": False}),
+        }
+        return workflow, metadata
+
     if prompt is not None:
         set_input(workflow, mode["prompt"], prompt)
 
@@ -342,6 +438,7 @@ def parser() -> argparse.ArgumentParser:
     result.add_argument("--project-root", type=Path, default=Path.cwd())
     result.add_argument("--output", type=Path, required=True)
     result.add_argument("--turbo", action=argparse.BooleanOptionalAction, default=None)
+    result.add_argument("--variant", choices=("storyboard-original",))
     result.add_argument("--width", type=int)
     result.add_argument("--height", type=int)
     result.add_argument("--duration", type=float)

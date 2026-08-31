@@ -126,6 +126,19 @@
             "denoise": ["124", "denoise"],
             "ref_image_size": ["136", "ref_image_size"]
           }
+        },
+        "storyboard-original": {
+          "ui": "/home/karim/Documents/minimax-h3-microdrama/workflow/minimax_h3_r2v_story_board.json",
+          "api": "storyboard-original.api.json",
+          "source_path": "/home/karim/Documents/minimax-h3-microdrama/workflow/minimax_h3_r2v_story_board.json",
+          "source_sha256": "f073053eabf87c43f867d7a8879d21a3286d80490a8d2c9f84b7f2ceb2e8ee23",
+          "api_sha256": "0ef2ffa84db75bcf84d436ac116e1ac11688eca67797e433019cc6342ee5cd25",
+          "prompt": ["2", "value"],
+          "storyboard": ["9", "image"],
+          "standalone_audio": ["11", "ref_audios.ref_audio_0"],
+          "audio_node": "43",
+          "seed": ["31", "noise_seed"],
+          "output": ["42", "filename_prefix"]
         }
       },
       "prompt": ["136", "prompt"],

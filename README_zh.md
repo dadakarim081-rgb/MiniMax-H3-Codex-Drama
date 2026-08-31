@@ -70,7 +70,7 @@ npx skills add chiphoton/MiniMax-H3-Codex-Drama --all -g -a codex -y
 
 ### 2. 准备本地运行环境
 
-请先安装 Node.js 和 npm：插件会通过 `npx` 启动固定版本的 `comfyui-mcp@0.49.3`，首次启动时可能需要联网以填充 npm 缓存。在 `http://localhost:8188` 运行 ComfyUI，并准备兼容的 MiniMax H3 模型与节点；安装 FFmpeg/FFprobe 以完成剪辑和 QC。
+请先安装 Node.js 和 npm：插件会通过 `npx` 启动固定版本的 `comfyui-mcp@0.49.6`，首次启动时可能需要联网以填充 npm 缓存。在 `http://localhost:8188` 运行 ComfyUI，并准备兼容的 MiniMax H3 模型与节点；安装 FFmpeg/FFprobe 以完成剪辑和 QC。
 
 Turbo 默认启用。请通过 ComfyUI-Manager 搜索并安装 **MiniMax-H3 Turbo**，或把 [ComfyUI-MiniMax-H3-Turbo](https://github.com/Larryvrh/ComfyUI-MiniMax-H3-Turbo) 放入 `ComfyUI/custom_nodes/`，随后重启 ComfyUI；再从 [Turbo LoRA 仓库](https://huggingface.co/larryvrh/MiniMax-H3-Turbo-Lora) 下载 `minimax_h3_turbo_v4_step600_ema.safetensors` 并放入 `ComfyUI/models/loras/`。如果有意不安装这些依赖，可使用 `[turbo=false]` 切回原始工作流。
 

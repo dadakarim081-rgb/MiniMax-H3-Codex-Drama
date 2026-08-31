@@ -21,6 +21,7 @@ def arguments(root: Path, output: Path, mode: str = "t2v", **changes: object) ->
         "project_root": root,
         "output": output,
         "turbo": None,
+        "variant": None,
         "width": None,
         "height": None,
         "duration": None,
@@ -145,6 +146,35 @@ class PrepareWorkflowTests(unittest.TestCase):
             self.assertEqual(workflow["17"]["class_type"], "KSamplerSelect")
             self.assertEqual(workflow["9"]["inputs"]["steps"], 20)
             self.assertNotIn("134", workflow)
+
+    def test_storyboard_original_route_patches_only_declared_fields(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            args = arguments(
+                root,
+                root / "out.json",
+                mode="r2v",
+                variant="storyboard-original",
+                prompt="Finished prompt",
+                reference_image=["board.png"],
+                reference_audio=["audio.wav"],
+                seed=42,
+                filename_prefix="shot",
+            )
+            with mock.patch.object(prepare, "USER_CONFIG", root / "missing.json"):
+                workflow, metadata = prepare.build_workflow(args)
+            self.assertEqual(metadata["variant"], "storyboard-original")
+            self.assertFalse(metadata["turbo"])
+            self.assertEqual(workflow["2"]["inputs"]["value"], "Finished prompt")
+            self.assertEqual(workflow["9"]["inputs"]["image"], "board.png")
+            self.assertEqual(workflow["11"]["inputs"]["ref_audios.ref_audio_0"], ["43", 0])
+            self.assertNotIn("ref_video_audios.ref_video_audio_0", workflow["11"]["inputs"])
+            self.assertEqual(workflow["31"]["inputs"]["noise_seed"], 42)
+            self.assertEqual(workflow["42"]["inputs"]["filename_prefix"], "shot")
+            with self.assertRaisesRegex(prepare.ConfigError, "only accepts"):
+                prepare.build_workflow(
+                    arguments(root, root / "bad.json", mode="r2v", variant="storyboard-original", duration=5)
+                )
 
     def test_explicit_turbo_flag_overrides_project_config(self) -> None:
         with tempfile.TemporaryDirectory() as temp:

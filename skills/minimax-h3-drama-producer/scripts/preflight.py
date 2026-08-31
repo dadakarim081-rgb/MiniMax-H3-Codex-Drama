@@ -133,6 +133,7 @@ def workflow_report() -> dict[str, Any]:
         "t2v-turbo.api.json",
         "i2v-turbo.api.json",
         "r2v-turbo.api.json",
+        "storyboard-original.api.json",
         "manifest.json",
     ]
     base = manifest.parent

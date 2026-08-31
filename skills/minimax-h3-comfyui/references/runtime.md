@@ -1,6 +1,6 @@
 # ComfyUI runtime procedure
 
-The companion MCP is pinned in the plugin to `artokun/comfyui-mcp` 0.49.3. It may expose either direct tools or compact meta-tools. When only `list_tools`, `describe_tool`, and `call_tool` are visible, discover and invoke the named operation through those meta-tools.
+The companion MCP is pinned in the plugin to `artokun/comfyui-mcp` 0.49.6. It may expose either direct tools or compact meta-tools. When only `list_tools`, `describe_tool`, and `call_tool` are visible, discover and invoke the named operation through those meta-tools.
 
 ## 1. Resolve the request and configuration
 
@@ -68,6 +68,8 @@ python3 <skill>/scripts/prepare_workflow.py \
 ```
 
 Turbo is selected by default. Pass `--no-turbo` only when `[turbo=false]` (or another false alias) wins; pass `--turbo` when an explicit true flag must override a false config value. Pass uploaded filenames with `--first-frame`, `--last-frame`, repeated `--reference-image`, repeated `--reference-video`, or repeated `--reference-audio`. Pass resolved filenames with `--fl2va`, `--ref2va`, `--text-encoder`, `--video-vae`, `--audio-vae`, and `--turbo-lora` when applicable.
+
+For the preserved original storyboard route, pass `--mode r2v --variant storyboard-original`. Its pinned API hash is checked before patching; only the finished prompt, one storyboard image, one standalone Audio1, seed, and output prefix may change. Duration and all size, model, and sampler settings stay frozen.
 
 Use `validate_workflow` on the resulting API graph. If it reports missing models, re-run the resolution procedure. If it reports a missing core H3 node, report that the connected ComfyUI version lacks MiniMax H3 support. If it reports either Turbo node missing, report the node-pack setup above and suggest `[turbo=false]` only as an explicit user choice. Do not enqueue until validation has no errors.
 

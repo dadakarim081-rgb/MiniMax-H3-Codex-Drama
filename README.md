@@ -70,7 +70,7 @@ The skills-only CLI does not preserve plugin namespaces and may discover the nes
 
 ### 2. Prepare the local runtime
 
-Install Node.js and npm: the plugin launches the pinned `comfyui-mcp@0.49.3` package through `npx`, and its first launch may need network access to populate the npm cache. Run ComfyUI at `http://localhost:8188` with compatible MiniMax H3 models and nodes. Install FFmpeg/FFprobe for assembly and QC.
+Install Node.js and npm: the plugin launches the pinned `comfyui-mcp@0.49.6` package through `npx`, and its first launch may need network access to populate the npm cache. Run ComfyUI at `http://localhost:8188` with compatible MiniMax H3 models and nodes. Install FFmpeg/FFprobe for assembly and QC.
 
 Turbo is enabled by default. Install [ComfyUI-MiniMax-H3-Turbo](https://github.com/Larryvrh/ComfyUI-MiniMax-H3-Turbo) through ComfyUI-Manager (search **MiniMax-H3 Turbo**) or under `ComfyUI/custom_nodes/`, restart ComfyUI, and place `minimax_h3_turbo_v4_step600_ema.safetensors` from the [Turbo LoRA repository](https://huggingface.co/larryvrh/MiniMax-H3-Turbo-Lora) in `ComfyUI/models/loras/`. Use `[turbo=false]` for the original workflow when those Turbo dependencies are intentionally unavailable.
 

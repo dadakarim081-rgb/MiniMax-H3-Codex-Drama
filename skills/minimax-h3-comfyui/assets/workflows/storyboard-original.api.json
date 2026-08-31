@@ -1,0 +1,408 @@
+{
+  "1": {
+    "class_type": "VHS_VideoCombine",
+    "inputs": {
+      "images": [
+        "7",
+        0
+      ],
+      "audio": [
+        "8",
+        0
+      ],
+      "frame_rate": 24,
+      "loop_count": 0,
+      "filename_prefix": "AnimateDiff",
+      "format": "video/h264-mp4",
+      "pingpong": false,
+      "save_output": false,
+      "no_preview": false,
+      "save_metadata": true,
+      "trim_to_audio": false
+    }
+  },
+  "3": {
+    "class_type": "VAELoader",
+    "inputs": {
+      "vae_name": "minimax_h3_video_vae_fp16.safetensors"
+    }
+  },
+  "4": {
+    "class_type": "VAELoader",
+    "inputs": {
+      "vae_name": "minimax_h3_audio_vae_fp32.safetensors"
+    }
+  },
+  "6": {
+    "class_type": "ManualSigmas",
+    "inputs": {
+      "sigmas": "0.9231, 0.8780, 0.8000, 0.6316, 0.3158, 0.0000"
+    }
+  },
+  "7": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": [
+        "21",
+        1
+      ],
+      "vae": [
+        "3",
+        0
+      ]
+    }
+  },
+  "8": {
+    "class_type": "VAEDecodeAudio",
+    "inputs": {
+      "samples": [
+        "21",
+        1
+      ],
+      "vae": [
+        "4",
+        0
+      ]
+    }
+  },
+  "10": {
+    "class_type": "LTXVConcatAVLatent",
+    "inputs": {
+      "video_latent": [
+        "39",
+        0
+      ],
+      "audio_latent": [
+        "35",
+        1
+      ]
+    }
+  },
+  "11": {
+    "class_type": "MiniMaxH3ReferenceToVideo",
+    "inputs": {
+      "clip": [
+        "15",
+        0
+      ],
+      "vae": [
+        "3",
+        0
+      ],
+      "audio_vae": [
+        "4",
+        0
+      ],
+      "ref_images.ref_image_0": [
+        "9",
+        0
+      ],
+      "prompt": [
+        "2",
+        0
+      ],
+      "width": [
+        "20",
+        0
+      ],
+      "height": [
+        "20",
+        1
+      ],
+      "length": [
+        "19",
+        1
+      ],
+      "ref_image_size": "match"
+    }
+  },
+  "12": {
+    "class_type": "ModelPreviewOverrideKJ",
+    "inputs": {
+      "model": [
+        "37",
+        0
+      ],
+      "max_resolution": 1024,
+      "jpeg_quality": 80,
+      "suppress_default_preview": true,
+      "preview_frames": [
+        "19",
+        1
+      ],
+      "preview_fps": 12,
+      "tiny_vae": "taeh3.safetensors"
+    }
+  },
+  "13": {
+    "class_type": "SplitSigmas",
+    "inputs": {
+      "sigmas": [
+        "24",
+        0
+      ],
+      "step": 4
+    }
+  },
+  "15": {
+    "class_type": "CLIPLoader",
+    "inputs": {
+      "clip_name": "qwen3vl_32b_minimax_h3_nvfp4_awq.safetensors",
+      "type": "minimax",
+      "device": "default"
+    }
+  },
+  "16": {
+    "class_type": "SamplerCustomAdvanced",
+    "inputs": {
+      "noise": [
+        "31",
+        0
+      ],
+      "guider": [
+        "32",
+        0
+      ],
+      "sampler": [
+        "18",
+        0
+      ],
+      "sigmas": [
+        "33",
+        0
+      ],
+      "latent_image": [
+        "10",
+        0
+      ]
+    }
+  },
+  "18": {
+    "class_type": "KSamplerSelect",
+    "inputs": {
+      "sampler_name": "euler"
+    }
+  },
+  "21": {
+    "class_type": "SamplerCustomAdvanced",
+    "inputs": {
+      "noise": [
+        "31",
+        0
+      ],
+      "guider": [
+        "29",
+        0
+      ],
+      "sampler": [
+        "18",
+        0
+      ],
+      "sigmas": [
+        "13",
+        0
+      ],
+      "latent_image": [
+        "11",
+        1
+      ]
+    }
+  },
+  "22": {
+    "class_type": "ManualSigmas",
+    "inputs": {
+      "sigmas": "0.9035, 0.8000, 0.6316, 0.3158, 0.0000"
+    }
+  },
+  "23": {
+    "class_type": "PrimitiveFloat",
+    "inputs": {
+      "value": 1
+    }
+  },
+  "24": {
+    "class_type": "BasicScheduler",
+    "inputs": {
+      "model": [
+        "30",
+        0
+      ],
+      "scheduler": "simple",
+      "steps": 8,
+      "denoise": 1
+    }
+  },
+  "29": {
+    "class_type": "BasicGuider",
+    "inputs": {
+      "model": [
+        "12",
+        0
+      ],
+      "conditioning": [
+        "11",
+        0
+      ]
+    }
+  },
+  "32": {
+    "class_type": "BasicGuider",
+    "inputs": {
+      "model": [
+        "37",
+        0
+      ],
+      "conditioning": [
+        "11",
+        0
+      ]
+    }
+  },
+  "33": {
+    "class_type": "ManualSigmas",
+    "inputs": {
+      "sigmas": "0.9035, 0.6316, 0.3158, 0.0000"
+    }
+  },
+  "20": {
+    "class_type": "ResolutionSelector",
+    "inputs": {
+      "aspect_ratio": "16:9 (Widescreen)",
+      "megapixels": 0.2,
+      "multiple": 32
+    }
+  },
+  "19": {
+    "class_type": "ComfyMathExpression",
+    "inputs": {
+      "values.a": [
+        "17",
+        0
+      ],
+      "expression": "max(5, round(a * 24)) + (5 - (max(5, round(a * 24)) % 17)) % 17"
+    }
+  },
+  "38": {
+    "class_type": "MiniMaxH3SigmaShift",
+    "inputs": {
+      "model": [
+        "30",
+        0
+      ],
+      "shift_video": 12,
+      "shift_audio": 3
+    }
+  },
+  "31": {
+    "class_type": "RandomNoise",
+    "inputs": {
+      "noise_seed": 774787641417050
+    }
+  },
+  "37": {
+    "class_type": "ModelAttentionBackend",
+    "inputs": {
+      "model": [
+        "38",
+        0
+      ],
+      "attention": "comfy kitchen attention"
+    }
+  },
+  "35": {
+    "class_type": "LTXVSeparateAVLatent",
+    "inputs": {
+      "av_latent": [
+        "21",
+        1
+      ]
+    }
+  },
+  "39": {
+    "class_type": "MinimaxH3LatentUpscaler3D",
+    "inputs": {
+      "latent": [
+        "35",
+        0
+      ],
+      "model_name": "minimax_h3_latent_upscaler_3d_fp16.safetensors",
+      "mode": "megapixels",
+      "mode.megapixels": 1,
+      "align": 32,
+      "device": "cuda",
+      "precision": "fp16",
+      "enable_chunking": true
+    }
+  },
+  "30": {
+    "class_type": "UNETLoader",
+    "inputs": {
+      "unet_name": "10Eros_Max_h3_TURBO_ref2va_beta2.safetensors",
+      "weight_dtype": "default"
+    }
+  },
+  "25": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": [
+        "16",
+        0
+      ],
+      "vae": [
+        "3",
+        0
+      ]
+    }
+  },
+  "14": {
+    "class_type": "VAEDecodeAudio",
+    "inputs": {
+      "samples": [
+        "16",
+        0
+      ],
+      "vae": [
+        "4",
+        0
+      ]
+    }
+  },
+  "42": {
+    "class_type": "VHS_VideoCombine",
+    "inputs": {
+      "images": [
+        "25",
+        0
+      ],
+      "audio": [
+        "14",
+        0
+      ],
+      "frame_rate": 24,
+      "loop_count": 0,
+      "filename_prefix": "minimaxh3",
+      "format": "video/h264-mp4",
+      "pingpong": false,
+      "save_output": true,
+      "no_preview": false
+    }
+  },
+  "17": {
+    "class_type": "PrimitiveFloat",
+    "inputs": {
+      "value": 12
+    }
+  },
+  "9": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": "93d27cd25d17d0d5f2c1588374ebefef5af2889fe7b7e94303c42feb573b2481.png"
+    }
+  },
+  "2": {
+    "class_type": "PrimitiveStringMultiline",
+    "inputs": {
+      "value": "subject_definitions:\n- <Subject 1>: A photorealistic adult East Asian woman based on the character design in <Picture 1>, with an elegant face, natural skin texture, dark hair in a traditional updo, a silver-white floral hair ornament, dangling earrings, and a calm, graceful expression. Establish one consistent realistic identity and preserve it across every shot.\n- <Subject 2>: A physically realistic pale icy-blue ceremonial gown adapted from <Picture 1>, featuring white floral appliqués, pearl shoulder chains, an embroidered fitted bodice, and translucent flowing sleeves.\n- <Subject 3>: A photorealistic traditional East Asian tea room containing a carved low wooden table, one dark iron hot-water kettle, one dark bamboo-pattern ceramic teapot, one cylindrical tea container, one wooden tea spoon, four tasting cups on a tray, one side cup, tea utensils, floor cushions, a circular moon gate, bamboo, bonsai, wooden screens, and a hanging scroll displaying “茶禅一味”.\n- <Picture 1>: A hand-drawn six-panel storyboard used only as a reference for shot order, composition, actions, character design, costume design, environment layout, and prop continuity. Its sketch style, monochrome appearance, panel borders, numbers, and paper texture must not appear in the generated video.\nsummary:\nreference generation + keyframe completion. Create a 12-second photorealistic live-action cinematic tea-ceremony video. Follow the six panels of <Picture 1> from left to right and top to bottom as six chronological shot beats. Do not reproduce the storyboard as a static image, split screen, illustration, pencil animation, or grayscale video.\nretention_analysis:\n- <Subject 1> — attribute_transfer: convert the storyboard character into one believable photorealistic adult woman while preserving her hairstyle, ornaments, general facial elegance, and composed temperament.\n- <Subject 2> — attribute_transfer: convert the illustrated gown into realistic embroidered fabric, translucent silk sleeves, pearl chains, and dimensional floral appliqués.\n- <Subject 3> — attribute_transfer: reconstruct the illustrated tea room and tea props as realistic wood, iron, ceramic, silk, glass, water, and steam.\n- <Picture 1> — partially_preserved: preserve only the six-shot sequence, compositions, actions, prop identities, and spatial layout. Do not preserve the drawing medium or storyboard presentation.\ndetailed_description:\nPhotorealistic live-action cinematography with natural skin pores, realistic hair strands, physically accurate hands, dimensional embroidered fabric, warm wooden surfaces, glazed ceramic reflections, believable water, and delicate steam. Soft morning sunlight enters through the wooden screens, creating warm highlights and natural shadows. No illustration or pencil texture.\n[Shot 1] <Picture 1> guides a symmetrical wide establishing shot of <Subject 1> wearing <Subject 2> inside <Subject 3>. The camera slowly pushes forward by 4%. She kneels behind the low tea table, straightens the cups, and calmly arranges the tea utensils. The moon gate, bamboo garden, bonsai, cushions, and hanging scroll marked “茶禅一味” remain stable.\n[Shot 2] At 00:02.000, cut to a medium shot. She steadies the cylindrical tea container with her left hand, removes its lid with her right hand, places the lid beside it, and picks up the wooden tea spoon. Her gaze remains focused on the tea set while her translucent sleeves settle naturally.\n[Shot 3] At 00:03.700, cut to a detailed close-up of her hands. She takes one measured spoonful of dry tea leaves and transfers it into the open bamboo-pattern ceramic teapot. The leaves fall naturally under gravity without floating or multiplying.\n[Shot 4] At 00:05.500, cut to a three-quarter medium close-up. She lifts the dark iron kettle and pours one continuous stream of hot water into the ceramic teapot while steadying it with her other hand. The camera tilts downward slowly by six degrees. Realistic steam curls upward and disperses in the warm air.\n[Shot 5] At 00:07.600, cut to a quiet portrait medium close-up. The ceramic teapot rests closed while the tea steeps. She lowers one hand to the table, lightly rests the other near her chin, observes the teapot, breathes softly, and blinks once. A faint ribbon of steam rises from the lid.\n[Shot 6] At 00:09.600, cut to a medium serving shot. She lifts the same ceramic teapot, supports one small cup with her other hand, and pours a controlled stream of pale-golden tea. The cup fills without overflowing. She stops the stream cleanly and finishes with a subtle, satisfied smile.\nMaintain one continuous realistic identity, correct hand anatomy, stable costume details, consistent room geometry, fixed cup count, and clear separation between the iron water kettle and ceramic serving teapot. No storyboard grid, panel borders, shot numbers, split screen, pencil lines, monochrome drawing, paper texture, anime style, duplicated props, floating objects, excessive steam, additional people, subtitles, logos, or watermarks.\noverall_soundscape:\nQuiet tea-room ambience with a faint breeze through bamboo, distant birds, soft silk movement, delicate ceramic contact, dry tea leaves sliding from the spoon, the weight of the iron kettle, hot water pouring, and the final tea stream. No dialogue.\nnon_diegetic_music:\nVery soft and sparse guqin notes with long pauses, remaining beneath the natural tea-ceremony sounds."
+    }
+  }
+}
