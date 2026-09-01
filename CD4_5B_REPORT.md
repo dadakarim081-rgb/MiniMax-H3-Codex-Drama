@@ -2,14 +2,13 @@
 
 Date: 2026-09-01
 
-Decision: **E — L40S EXECUTION BLOCKED**
+Decision: **C — COMPOSER REMAINS BETTER**
 
 The exact CD4.5A OpenH3-IR prompt was extracted and prepared in the proven native
-I2V graph. An initial single Modal L40S function call was left queued beyond its
-bounded 120-second startup window. The later five-minute L40S retry recorded below
-was also left queued and stopped without allocating a worker. No ComfyUI process
-started, no live graph validation ran, no H3 enqueue occurred, and no output media
-was produced.
+I2V graph. Both L40S scheduling attempts were left queued without a worker. The
+explicit A100-80GB capacity fallback then completed the exact one-shot S02
+generation and the direct Composer comparison recorded below; the OpenH3-IR take
+introduced visible traffic earlier, so Composer remains better.
 
 ## Scope and starting point
 
@@ -119,7 +118,7 @@ the earlier allocation proof. Allocation latency and ComfyUI startup latency
 are therefore **not available**. The queued function was canceled, the temporary
 app was stopped explicitly, and `modal container list` was empty afterward.
 
-## Generation and technical record
+## L40S attempt generation and technical record
 
 | Field | Result |
 |---|---|
@@ -134,7 +133,7 @@ app was stopped explicitly, and `modal container list` was empty afterward.
 | FFmpeg decode | Not applicable; no output |
 | Generated media | None; `outputs/the-last-bus/cd4-5b/` remained empty |
 
-## Comparison with CD4.4 Composer
+## L40S attempt comparison with CD4.4 Composer
 
 No fair visual comparison was possible because OpenH3-IR produced no clip. The
 existing Composer baseline was not regenerated:
@@ -191,11 +190,113 @@ comparison. The retry enqueue count was `0`; no output path, output hash, runtim
 metrics, or new media exists. There was no A100 fallback, prompt/model/workflow
 change, second enqueue, or production-source change.
 
-## Current decision
+## L40S retry decision
 
 **E — L40S EXECUTION BLOCKED.** The five-minute L40S-only retry reproduced the
 allocation blocker. CD4.5B cannot make the requested visual A/B/C/D comparison
 until an L40S worker can be scheduled.
+
+## A100-80GB capacity fallback
+
+This fallback continued the same CD4.5B experiment after the two documented L40S
+capacity blockers. It changed capacity only. The CD4.5A result, complete final
+prompt, S02 first frame, prepared native graph, seed, sampler, model files, and
+all generation controls were unchanged. OpenH3-IR, Gemini, LiteLLM, Composer,
+and the Composer baseline were not rerun.
+
+- Fallback starting HEAD: `e9483b83683624e2c00f3038cb77725f5c46ea6a`
+- Requested fallback GPU: `A100-80GB`
+- Actual GPU: `NVIDIA A100-SXM4-80GB, 81920 MiB`
+- Exact prompt used: the complete prompt in **Exact prompt prepared** above,
+  byte-for-byte; prompt SHA-256 `de460eac726ac75b5c3a528fe77f9632fc2f3325628be56c36662a368e1e7342`
+- Prompt file: `/tmp/cd45b_openh3_s02_prompt.txt` (872 bytes)
+- Prepared graph SHA-256: `e0ae1257219978becc4dde2073df0f0291a9b91d20eed39b7d1798b0a6acc45f`
+- Local Modal call start: `2026-09-01T08:00:29Z`
+- Worker/container start: `2026-09-01 09:00:43+01:00` (approximately 14 seconds after call start)
+- ComfyUI startup: `29.422s` from runner metadata; server-ready log at
+  `2026-09-01 09:01:12+01:00`
+- Generation execution: `217.619s` from enqueue to completed history;
+  ComfyUI reported `Prompt executed in 211.52 seconds`
+- Worker wall time: `247.060s`
+- Local Modal call wall time: `261.134s`
+- Peak VRAM: runner reported `allocated_bytes: 0` and `reserved_bytes: 0`;
+  no usable peak sample was available
+- Temporary Modal app: `ap-79DFklK4vkG4Yh57oPCAWe`
+- Local ComfyUI: `127.0.0.1:8188`; no public endpoint, bridge, or persistent service
+
+### Cache, validation, and enqueue
+
+All required model files were present in `minimax-h3-microdrama-cache`; every
+entry reported `downloaded: false`:
+
+| File | Bytes |
+|---|---:|
+| `diffusion_models/10Eros_Max_h3_TURBO-hybrid_beta4_int8_convrot.safetensors` | `20,967,637,320` |
+| `text_encoders/qwen3vl_32b_minimax_h3_nvfp4_awq.safetensors` | `15,687,142,551` |
+| `vae/minimax_h3_video_vae_fp16.safetensors` | `5,207,808,496` |
+| `vae/minimax_h3_audio_vae_fp32.safetensors` | `605,254,808` |
+
+Live `/object_info` validation passed with `1,144` node definitions and no
+errors. The selected graph values were:
+
+| Control | Effective value |
+|---|---|
+| Checkpoint | `10Eros_Max_h3_TURBO-hybrid_beta4_int8_convrot.safetensors` |
+| Qwen / video VAE / audio VAE | exact cached files listed above |
+| Sampler / scheduler / steps | `euler` / `simple` / `8` |
+| Denoise / seed | `1.0` / `4102` |
+| Resolution / frames / FPS | `1344x768` / `124` / `24` |
+| First frame | `s02-last-chance.png`; SHA-256 matches approved frame |
+| Larry or other LoRA | absent / false |
+| Latent upscaler | absent / false |
+| Last frame | absent |
+
+The history status was `success`, the enqueue count was exactly `1`, and the
+prompt ID was `9555ffb5-1fb4-4442-991d-0a14d30bc181`.
+
+### Output and decode record
+
+- Remote output: `/cache/cd4-5b-output/openh3-s02-1788249644089374593/cd4-5b/S02-openh3-ir_00001_.mp4`
+- Local output: `outputs/the-last-bus/clips/cd4-5b/S02-i2v-openh3-ir.mp4`
+- Output size: `1,269,268` bytes
+- Output SHA-256: `b328eceb91d4a351ef211e433053be558767962085950da41faec8d622122ca7`
+- Video: H.264 High, `1344x768`, `yuv420p`, `124` frames at `24 fps`, `5.166667s`
+- Audio: AAC LC, `32 kHz`, stereo, `5.167000s`
+- Container: MP4; `2` streams; `1,965,191` bit/s
+- Full decode: `ffmpeg -hide_banner -v error -i ... -f null -` exited `0` with no stderr
+
+### Direct visual comparison with CD4.4 Composer
+
+The existing Composer baseline was used without regeneration:
+`outputs/the-last-bus/clips/cd4-4-ab/S02-i2v-10eros-composer.mp4`.
+Its SHA-256 remains
+`2ff8ca56ee33499f6236ca5cedddc083e4df2363f8485372b7b4b51b5bb19484`.
+
+| Criterion | CD4.4 Composer | CD4.5B OpenH3-IR on A100-80GB |
+|---|---|---|
+| Empty road | Violated by a generic vehicle/vehicle lights around `3–4s` | Violated earlier: a small edge cue around `0.75s`, clear generic car and paired red taillights by about `1.0s` |
+| Bus | No bus | No bus |
+| Headlights / vehicle lights | Generic vehicle with red/white lights late in the shot; no bus headlights | Red rear/taillights appear early; no clear headlight approach |
+| Arrival / next-shot information | None | No bus arrival or next-shot information; a generic road vehicle is visible |
+| Nora identity and continuity | Stable; mustard raincoat/backpack preserved | Stable; mustard raincoat/backpack preserved |
+| Watch → lower wrist → screen-right concern | Readable and holds | Readable; screen-right concern holds through the end |
+| Hand/face stability | Usable with normal generative softness | Usable with comparable generative softness; no identity break |
+| Environment continuity | Shelter, rain, wet road preserved | Shelter, rain, wet road preserved; traffic is the violation |
+| Motion / overall quality | Comparable cinematic quality | Comparable cinematic quality, but earlier traffic makes it less compliant |
+
+The OpenH3-IR phrase `distant traffic hums` was not audio-only in this
+realization: visible generic traffic and red taillights appear at approximately
+the one-second mark. The clip did not visibly introduce a bus, bus headlights,
+engine, arrival event, or future-shot cue.
+
+## Final CD4.5B decision
+
+**C — COMPOSER REMAINS BETTER.** Both takes are visually usable for Nora’s
+identity, clothing continuity, watch action, screen-right gaze, and rainy shelter
+environment. OpenH3-IR produces the unwanted generic vehicle/taillights roughly
+two seconds earlier than Composer, so it is the more serious empty-road violation.
+The A100-80GB fallback changed capacity only; it did not change the experimental
+comparison.
 
 ## Commit scope
 
