@@ -7,6 +7,11 @@ description: Produce or resume complete profile-driven videos in Codex with GPT-
 
 Own the complete local production project while keeping the sibling MiniMax-H3 skills reusable and prompt-focused. Preserve user-authored story, character, product, and brand decisions. Expand them only when the user asks or when an execution-blocking gap remains after inspecting supplied assets.
 
+For the frozen production ownership and routing policy, use
+[CD5_PRODUCTION_ARCHITECTURE.md](../../CD5_PRODUCTION_ARCHITECTURE.md). The
+Producer owns route and storyboard decisions; sibling skills execute the chosen
+specialist task.
+
 ## Select mode and profile
 
 Use `guided` mode unless the user asks to proceed immediately, says to use best judgment, or supplies `[mode=fast]`.
@@ -59,10 +64,10 @@ Generate assets in dependency order:
 
 1. recurring visual-entity masters;
 2. scene masters with stable layout and light direction;
-3. a complete visual storyboard;
+3. a storyboard only for shots whose Producer routing decision requires it;
 4. one exact keyframe per shot that needs frame control.
 
-Keep text labels out of generative images when exact typography matters; add labels deterministically afterward. In guided mode, show the masters, storyboard, and keyframes and wait for the visual-lock approval before H3 execution.
+Keep text labels out of generative images when exact typography matters; add labels deterministically afterward. In guided mode, show the masters, any required storyboard, and keyframes and wait for the visual-lock approval before H3 execution.
 
 ## Route and generate every shot
 
@@ -74,6 +79,10 @@ Choose one sibling specialist for each shot:
 - a localized change to an existing generated clip: read and apply `../minimax-h3-video-editor/SKILL.md`.
 
 Give every reference a bounded job. Prefer frame-to-video for shots with approved keyframes. Use first/last-frame control only for a continuous bridge whose ending must land exactly. After producing the prompt, read and apply `../minimax-h3-comfyui/SKILL.md` to prepare, validate, submit, monitor, and fetch the local ComfyUI result.
+
+For CD5 production, explicitly use the frozen native beta4 H3 stack without
+Larry Turbo stacking; the standalone ComfyUI skill's generic Turbo default is
+not the Producer's production policy.
 
 Generate one valid take for ordinary shots and up to two for profile-marked key shots. Retry once only for technical failure or an objective hard-gate failure. Do not exceed two valid takes per shot without user approval. Record workflow paths, prompt text, prompt IDs, settings, outputs, failures, and selection decisions in project state.
 

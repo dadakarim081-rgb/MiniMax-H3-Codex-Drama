@@ -20,17 +20,17 @@
   <code>Codex Plugin</code> · <code>MiniMax H3</code> · <code>GPT-Image</code> · <code>ComfyUI</code> · <code>FFmpeg</code>
 </p>
 
-MiniMax-H3 Drama 是一套 **Codex 优先的视频制作插件**，不只是提示词合集。Codex 会规划整支视频、建立可复用的视觉基准、为每个镜头选择合适的 MiniMax H3 工作流、监控本地 ComfyUI，并交付包含画面、声音、字幕和 QC 的可续作工程。
+MiniMax-H3 Drama 是一套 **Codex 优先的视频制作插件**，不只是提示词合集。Codex 会规划整支视频、建立可复用的视觉基准、为每个镜头选择合适的 MiniMax H3 工作流、监控本地 ComfyUI，并交付包含画面、声音、字幕和 QC 的可续作工程。冻结的生产策略见 [CD5_PRODUCTION_ARCHITECTURE.md](CD5_PRODUCTION_ARCHITECTURE.md)。
 
 ## ✨ 为什么值得用
 
 | 亮点 | 你会得到什么 |
 |---|---|
-| 🎭 **制作整支视频，而不只是单个片段** | 需求 → 人物/产品设定 → 场景母版 → 分镜 → 关键帧 → 镜头 → 成片 |
+| 🎭 **制作整支视频，而不只是单个片段** | 需求 → 人物/产品设定 → 场景母版 → 可选分镜 → 关键帧 → 镜头 → 成片 |
 | 🧬 **跨镜头一致性** | 显式追踪人物身份、服装、产品结构、场景、道具、轴线、光线和声音 |
 | 🧠 **Profile 驱动的导演方法** | 内置短剧与广告语法，也能从你自己的参考视频中提炼可复用 Profile |
 | 🛠️ **本地、确定性的后期** | 本地 ComfyUI 官方 H3 工作流；版本化 FFmpeg 剪辑、混音、字幕、导出和 QC |
-| ⚡ **默认启用 Turbo** | T2V、I2V 与 R2V 默认使用 6 步 MiniMax H3 Turbo LoRA；`[turbo=false]` 可切回原始 20 步工作流 |
+| ⚙️ **显式生产路由** | Producer 选择 T2V、I2V、首尾帧、R2V、storyboard-original 或 editor；CD5 默认使用原生 10Eros beta4，不叠加 Larry Turbo |
 | 🔁 **天然支持断点续作** | 提示词、输入哈希、工作流、`prompt_id`、take、选片、假设和资产全部进入工程账本 |
 
 <p align="center">
@@ -72,7 +72,7 @@ npx skills add chiphoton/MiniMax-H3-Codex-Drama --all -g -a codex -y
 
 请先安装 Node.js 和 npm：插件会通过 `npx` 启动固定版本的 `comfyui-mcp@0.49.6`，首次启动时可能需要联网以填充 npm 缓存。在 `http://localhost:8188` 运行 ComfyUI，并准备兼容的 MiniMax H3 模型与节点；安装 FFmpeg/FFprobe 以完成剪辑和 QC。
 
-Turbo 默认启用。请通过 ComfyUI-Manager 搜索并安装 **MiniMax-H3 Turbo**，或把 [ComfyUI-MiniMax-H3-Turbo](https://github.com/Larryvrh/ComfyUI-MiniMax-H3-Turbo) 放入 `ComfyUI/custom_nodes/`，随后重启 ComfyUI；再从 [Turbo LoRA 仓库](https://huggingface.co/larryvrh/MiniMax-H3-Turbo-Lora) 下载 `minimax_h3_turbo_v4_step600_ema.safetensors` 并放入 `ComfyUI/models/loras/`。如果有意不安装这些依赖，可使用 `[turbo=false]` 切回原始工作流。
+CD5 生产使用原生 `10Eros_Max_h3_TURBO-hybrid_beta4_int8_convrot.safetensors`，测试默认值为 `euler` / `simple` / `8`，不叠加 Larry Turbo LoRA。独立的 ComfyUI skill 仍支持显式的 Turbo 请求；生产策略见 [CD5_PRODUCTION_ARCHITECTURE.md](CD5_PRODUCTION_ARCHITECTURE.md)。
 
 插件会在昂贵操作之前做环境检查，但**不会**静默下载模型、安装 ComfyUI 节点、启动服务或重启 ComfyUI。
 

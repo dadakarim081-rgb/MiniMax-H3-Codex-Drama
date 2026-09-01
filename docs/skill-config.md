@@ -2,7 +2,7 @@
 
 [← English README](../README.md) · [中文 README](../README_zh.md)
 
-This is the canonical user-facing reference for MiniMax-H3 Drama controls. It covers prompt-time flags, production behavior, ComfyUI configuration files, model and generation overrides, workflow routing, and production profiles.
+This is the canonical user-facing reference for MiniMax-H3 Drama controls. It covers prompt-time flags, production behavior, ComfyUI configuration files, model and generation overrides, workflow routing, and production profiles. For the frozen Producer architecture and production defaults, see [CD5_PRODUCTION_ARCHITECTURE.md](../CD5_PRODUCTION_ARCHITECTURE.md); that policy governs production even where the standalone execution controls below retain broader compatibility defaults.
 
 ## 1. Prompt-time controls
 
@@ -25,6 +25,10 @@ Every boolean bracket flag uses `[name=<boolean>]`. Names and values are case-in
 | `[turbo=false]` | MiniMax H3 ComfyUI | `true` | Use the original 20-step workflow; `off`, `no`, and `0` are equivalent |
 
 `*` Preview is only meaningful when `load_workflow=true`. With workflow loading disabled, preview is forced off.
+
+`†` The standalone ComfyUI execution default remains Turbo for compatibility.
+The CD5 Producer path explicitly selects native 10Eros beta4 without Larry Turbo
+stacking.
 
 ComfyUI control flags may appear anywhere in the request. They are removed before the final text is sent to a workflow. A ComfyUI control flag also counts as explicit execution intent when used through `minimax-h3-adviser`.
 
@@ -214,7 +218,7 @@ The plugin's bundled [`.mcp.json`](../.mcp.json) also targets `http://localhost:
 | `return` | boolean | `true` | Wait and fetch (`true`) or submit and return the ID (`false`) |
 | `preview` | boolean | `true` | Present the browser after loading; forced off when `load_workflow=false` |
 | `load_workflow` | boolean | `false` | Load the prepared UI graph onto the live canvas |
-| `turbo` | boolean | `true` | Select the 6-step Turbo workflow; prompt-time `[turbo=...]` wins |
+| `turbo` | boolean | `true†` | Select the 6-step Turbo workflow; prompt-time `[turbo=...]` wins |
 | `wait_timeout_minutes` | number, `0 < n ≤ 60` | `60` | Maximum awaited monitoring time; timeout does not cancel the job |
 
 Prompt-time flags override these values for the current request.
@@ -277,12 +281,16 @@ The execution skill selects a bundled official workflow from the role of the sup
 | T2V | No media controls the result | Prompt only |
 | I2V | An image is the literal first frame, optionally with an exact last frame | One first frame; optional one last frame |
 | R2V | Media controls identity, style, design, motion, camera, performance, voice, music, or rhythm | Up to 9 images, 3 videos, and 3 standalone audio files |
+| storyboard-original | A complex ordered storyboard/reference shot needs Ref2VA conditioning | Pinned R2V/Ref2VA storyboard route only |
+| Editor | An existing clip needs a localized change while other content remains stable | R2V reference-conditioned regeneration |
 
 For R2V, a reference video's frames and its paired audio are connected together. Give every reference a bounded role and state what it must not influence.
 
 The plugin executes bundled `.api.json` graphs and retains each matching `.ui.json` graph for provenance and canvas loading. Arbitrary attached workflow JSON is rejected in this version.
 
-Each route has two pinned variants. Turbo is selected by default and inserts the Turbo LoRA and custom sampler at 6 steps. The original 20-step variant remains available with `[turbo=false]`, `[turbo=off]`, `[turbo=no]`, or another false alias.
+Each bundled route has standard and Turbo variants. Turbo remains available for
+explicit standalone execution, but CD5 production uses the native 10Eros beta4
+path without Larry Turbo stacking; the Producer must make that choice explicitly.
 
 ## 5. Production profiles
 

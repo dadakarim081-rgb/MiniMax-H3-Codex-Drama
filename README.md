@@ -20,17 +20,17 @@
   <code>Codex Plugin</code> · <code>MiniMax H3</code> · <code>GPT-Image</code> · <code>ComfyUI</code> · <code>FFmpeg</code>
 </p>
 
-MiniMax-H3 Drama is a **Codex-first video production plugin**, not just a prompt collection. Codex plans the production, creates reusable visual sources of truth, routes every shot to the right MiniMax H3 workflow, monitors local ComfyUI, and delivers a resumable project with picture, sound, captions, and QC.
+MiniMax-H3 Drama is a **Codex-first video production plugin**, not just a prompt collection. Codex plans the production, creates reusable visual sources of truth, routes every shot to the right MiniMax H3 workflow, monitors local ComfyUI, and delivers a resumable project with picture, sound, captions, and QC. The frozen production policy is [CD5_PRODUCTION_ARCHITECTURE.md](CD5_PRODUCTION_ARCHITECTURE.md).
 
 ## ✨ Why creators use it
 
 | Highlight | What you get |
 |---|---|
-| 🎭 **A complete production, not one clip** | Brief → character/product bible → scene masters → storyboard → keyframes → shots → master |
+| 🎭 **A complete production, not one clip** | Brief → character/product bible → scene masters → optional storyboard → keyframes → shots → master |
 | 🧬 **Cross-shot consistency** | Identity, wardrobe, product geometry, locations, props, screen direction, light, and audio are tracked explicitly |
 | 🧠 **Profile-driven direction** | Built-in short-drama and commercial grammar, plus reusable profiles distilled from your own reference videos |
 | 🛠️ **Local, deterministic finishing** | Official H3 workflows through local ComfyUI; versioned FFmpeg editing, mixing, captions, exports, and QC |
-| ⚡ **Turbo by default** | T2V, I2V, and R2V use the MiniMax H3 Turbo LoRA at 6 steps; `[turbo=false]` keeps the original 20-step graphs available |
+| ⚙️ **Explicit production routing** | The Producer chooses T2V, I2V, first+last, R2V, storyboard-original, or editor; CD5 defaults to native 10Eros beta4 without Larry Turbo stacking |
 | 🔁 **Resumable by design** | Every prompt, input hash, workflow, `prompt_id`, take, selection, assumption, and artifact stays in the project ledger |
 
 <p align="center">
@@ -72,7 +72,7 @@ The skills-only CLI does not preserve plugin namespaces and may discover the nes
 
 Install Node.js and npm: the plugin launches the pinned `comfyui-mcp@0.49.6` package through `npx`, and its first launch may need network access to populate the npm cache. Run ComfyUI at `http://localhost:8188` with compatible MiniMax H3 models and nodes. Install FFmpeg/FFprobe for assembly and QC.
 
-Turbo is enabled by default. Install [ComfyUI-MiniMax-H3-Turbo](https://github.com/Larryvrh/ComfyUI-MiniMax-H3-Turbo) through ComfyUI-Manager (search **MiniMax-H3 Turbo**) or under `ComfyUI/custom_nodes/`, restart ComfyUI, and place `minimax_h3_turbo_v4_step600_ema.safetensors` from the [Turbo LoRA repository](https://huggingface.co/larryvrh/MiniMax-H3-Turbo-Lora) in `ComfyUI/models/loras/`. Use `[turbo=false]` for the original workflow when those Turbo dependencies are intentionally unavailable.
+For CD5 production, use the native `10Eros_Max_h3_TURBO-hybrid_beta4_int8_convrot.safetensors` stack with `euler` / `simple` / `8` tested defaults and no Larry Turbo LoRA stacking. The standalone ComfyUI skill still exposes Turbo for explicit non-CD5 requests; see [CD5_PRODUCTION_ARCHITECTURE.md](CD5_PRODUCTION_ARCHITECTURE.md) for the production policy.
 
 The plugin checks the environment before expensive work; it does **not** silently download models, install ComfyUI nodes, start services, or restart ComfyUI.
 
@@ -99,7 +99,7 @@ flowchart TB
     end
     subgraph R2["Design and generate"]
         direction RL
-        E["⑤ 🧩 Storyboard & keyframes"] --> F["⑥ 🎯 Route every shot"] --> G["⑦ 🎞️ H3 + ComfyUI"] --> H["⑧ ⭐ Select takes"]
+        E["⑤ 🧩 Optional storyboard & keyframes"] --> F["⑥ 🎯 Route every shot"] --> G["⑦ 🎞️ H3 + ComfyUI"] --> H["⑧ ⭐ Select takes"]
     end
     subgraph R3["Finish and deliver"]
         direction LR

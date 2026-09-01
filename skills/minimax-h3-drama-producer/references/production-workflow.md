@@ -7,7 +7,9 @@
 3. **Ingest** — copy or reference inputs, hash them, and assign bounded roles.
 4. **Plan** — create the production brief, story/message beats, entity ledger, asset ledger, continuity plan, shot list, and budget.
 5. **Production approval** — required in guided mode.
-6. **Visual development** — create missing entity masters, scene masters, storyboard, and keyframes.
+6. **Visual development** — create missing entity masters and scene masters,
+   then create a storyboard only when the Producer's route decision requires it,
+   plus the keyframes needed by selected shots.
 7. **Visual-lock approval** — required in guided mode unless explicitly waived.
 8. **Shot generation** — route, prepare, submit, monitor, fetch, and score takes.
 9. **Post-production** — voice, captions, effects, music, picture edit, mix, and encodes.

@@ -38,7 +38,11 @@ Use a simple overhead layout or annotated deterministic companion image when spa
 
 ## Storyboard and keyframes
 
-Generate the storyboard only after entity and scene masters exist. Cover every planned shot in timeline order and show shot ID, framing, action, camera direction, transition intent, and expected end state in accompanying structured data.
+When the Producer's routing decision requires a storyboard, generate it only
+after entity and scene masters exist. Cover every planned shot in timeline order
+and show shot ID, framing, action, camera direction, transition intent, and
+expected end state in accompanying structured data. Do not create a storyboard
+for every shot by default.
 
 Generate keyframes at the final delivery aspect ratio and derive them from the approved masters. A frame-to-video opening keyframe must be a usable literal first frame, not a collage or labeled sheet. Generate a closing keyframe only when the continuous bridge must land on an exact composition.
 
