@@ -5,10 +5,11 @@ Date: 2026-09-01
 Decision: **E — L40S EXECUTION BLOCKED**
 
 The exact CD4.5A OpenH3-IR prompt was extracted and prepared in the proven native
-I2V graph. A single Modal L40S function call was made, but Modal left it queued for
-more than the bounded 120-second startup window without allocating a worker. The
-attempt was stopped. No ComfyUI process started, no live graph validation ran, no
-H3 enqueue occurred, and no output media was produced.
+I2V graph. An initial single Modal L40S function call was left queued beyond its
+bounded 120-second startup window. The later five-minute L40S retry recorded below
+was also left queued and stopped without allocating a worker. No ComfyUI process
+started, no live graph validation ran, no H3 enqueue occurred, and no output media
+was produced.
 
 ## Scope and starting point
 
@@ -151,12 +152,50 @@ environment continuity, and motion/quality remain unchallenged for this mileston
 The OpenH3-IR phrase `distant traffic hums` was not visually testable because the
 generation never started.
 
-## Decision
+## Initial attempt decision
 
 **E — L40S EXECUTION BLOCKED.** The exact OpenH3-IR input and locked graph were
 prepared successfully, but L40S capacity prevented a worker from starting within
-the bounded window. No A100 fallback, retry, alternative seed, Composer
-regeneration, S01/S03 work, assembly, or source change was made.
+the bounded window. No A100 fallback, alternative seed, Composer regeneration,
+S01/S03 work, assembly, or source change was made in that initial attempt.
+
+## Retry record — five-minute L40S scheduling window
+
+This is the requested CD4.5B retry only. It reused the existing unmodified
+CD4.5A result, exact prompt, approved S02 first frame, prepared native graph, and
+temporary runner. OpenH3-IR, Gemini, LiteLLM, and Composer were not rerun.
+
+- Retry starting HEAD: `8234a21ae1cadd09cfc629c73c9245da4bce5b58`
+- Result artifact SHA-256: `d006f84cccd5a2c59b00e59f49a32bfca12d121d3f49d1969f526cb7426200a4`
+- Final IR prompt SHA-256: `de460eac726ac75b5c3a528fe77f9632fc2f3325628be56c36662a368e1e7342`
+- First-frame SHA-256: `37bdd9a3f1f34b2859afad9b9653fa364a39d6fda47e0f526053856b9f4e9ad5`
+- Prepared graph SHA-256: `e0ae1257219978becc4dde2073df0f0291a9b91d20eed39b7d1798b0a6acc45f`
+- Retry start: `2026-09-01T07:51:20Z`
+- Scheduling cutoff: `2026-09-01T07:56:20Z` (five minutes)
+- Modal client: `1.5.1`
+- Temporary app: `ap-ozs4y3jghSufbXPlyRNgz9`
+- Function: `run` (`fu-exUfXrY7EtYpd9yM40Q425`)
+- Requested GPU: `L40S`
+- Actual GPU: none
+- Persistent volume: `minimax-h3-microdrama-cache`
+
+Modal reported the function waiting for a `GPU_L40S` worker at
+`2026-09-01 08:52:05+01:00` and again at `08:52:43+01:00`. No worker allocation
+appeared by the five-minute cutoff. The local Modal run was interrupted after the
+window, the temporary app was stopped at `2026-09-01 08:56:39+01:00`, and a final
+`modal container list --json` returned `[]`.
+
+Because no L40S worker was allocated, the retry did not reach ComfyUI startup,
+live `/object_info` validation, H3 enqueue, generation, FFmpeg decode, or visual
+comparison. The retry enqueue count was `0`; no output path, output hash, runtime
+metrics, or new media exists. There was no A100 fallback, prompt/model/workflow
+change, second enqueue, or production-source change.
+
+## Current decision
+
+**E — L40S EXECUTION BLOCKED.** The five-minute L40S-only retry reproduced the
+allocation blocker. CD4.5B cannot make the requested visual A/B/C/D comparison
+until an L40S worker can be scheduled.
 
 ## Commit scope
 
